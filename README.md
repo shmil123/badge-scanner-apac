@@ -1,5 +1,7 @@
 # Badge Scanner APAC — booth lead capture on reps' phones, in any APAC script
 
+**Live:** https://shmil123.github.io/badge-scanner-apac/ (waiting on its Apps Script URL — SETUP.md block B)
+
 The APAC sibling of [`badge-scanner/`](../badge-scanner). Same 20-second capture flow, but built
 for events in Thailand, Vietnam, China, Japan, Korea, Singapore, India: badges print names in
 their own script, in English, or in both, and the sheet on the other end is the APAC
@@ -106,7 +108,9 @@ sheet's `Config` tab.
 1. **Pre-create the event tab** (duplicate `TEMPLATE`, rename it to the event) so reps pick a
    single canonical name. Pre-created tabs appear in the app as tappable chips + autocomplete.
    A name that isn't already an event triggers a "create it as a NEW event?" confirm.
-   Event names in CJK/Thai are fine — fuzzy matching keeps non-Latin names intact.
+   Event names in CJK/Thai are fine, but note that typo-tolerant matching applies to Latin
+   names only — a native-script name has to match the tab exactly, so pre-creating it matters
+   more here.
 2. Print a booth poster QR pointing to `https://<pages-url>/?event=<Event%20Name>`. Tell reps to
    open it **while on WiFi once** so the app caches for offline.
 

@@ -6,6 +6,8 @@ Two blocks, both yours (browser logins I can't do). ~7 minutes total.
 > https://docs.google.com/spreadsheets/d/1e3yrsskEwanXffUtXLr2DwFUpyV_Zh4Ot9Gfdd-OtQs
 > Do **not** run these steps on the *Event Leads* sheet — that one belongs to the other scanner.
 
+App URL: **https://shmil123.github.io/badge-scanner-apac/**
+
 Already done (no action needed):
 - The APAC sheet has its `TEMPLATE` (26 columns, Push? checkboxes in column V) and `Config` tabs.
   The original `Sheet1` was left untouched.
