@@ -1,0 +1,11 @@
+{
+  "name": "Classiq Badge Scanner APAC",
+  "short_name": "Badge APAC",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#191919",
+  "theme_color": "#191919",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
