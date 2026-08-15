@@ -43,6 +43,9 @@ var LEAD_SOURCE = "Event";   // fixed value the upload template expects
 var RESERVED_TABS = ["TEMPLATE", "Config", "_sync", "Sheet1"];
 var HAIKU_MODEL = "claude-haiku-4-5-20251001";
 var PHOTO_FOLDER = "Badge Scanner APAC Photos";
+// Matches CONFIG.SHARED_SECRET in the PWA. Public by necessity (it ships in the
+// client); a SHARED_SECRET Script Property overrides it if you ever rotate.
+var SHARED_SECRET = "46f0a726c0a6c54ed9f5869675a198aa";
 
 // Config moved behind the shared secret (POST action=config) — a bare GET must
 // not enumerate event names or rep names.
@@ -69,7 +72,9 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: "bad JSON" });
   }
-  var secret = PropertiesService.getScriptProperties().getProperty("SHARED_SECRET");
+  // The secret also ships in the public PWA, so a Script Property adds no real
+  // secrecy over the constant below — it only lets you rotate without a redeploy.
+  var secret = PropertiesService.getScriptProperties().getProperty("SHARED_SECRET") || SHARED_SECRET;
   if (!secret || req.secret !== secret) {
     return json_({ ok: false, error: "unauthorized" });
   }
@@ -242,10 +247,21 @@ function handleRomanize_(req) {
   });
 }
 
+// The Script Property is the intended home for the key. When this project was
+// deployed by deploy_apps_script.py the key instead arrives in an untracked
+// bootstrap.gs file (never committed — this repo is public), so fall back to it.
+function anthropicKey_() {
+  var key = PropertiesService.getScriptProperties().getProperty("ANTHROPIC_API_KEY");
+  if (key) return key;
+  if (typeof BOOTSTRAP_ANTHROPIC_KEY !== "undefined" && BOOTSTRAP_ANTHROPIC_KEY) {
+    return BOOTSTRAP_ANTHROPIC_KEY;
+  }
+  throw new Error("ANTHROPIC_API_KEY script property not set");
+}
+
 // Shared Anthropic call → parsed JSON object from the model's text response.
 function anthropic_(payload) {
-  var key = PropertiesService.getScriptProperties().getProperty("ANTHROPIC_API_KEY");
-  if (!key) throw new Error("ANTHROPIC_API_KEY script property not set");
+  var key = anthropicKey_();
   var resp = UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", {
     method: "post",
     contentType: "application/json",
