@@ -417,12 +417,12 @@
 // sheet. Never reuse the EMEA/US badge-scanner URL or secret here: the two apps write
 // different schemas into different workbooks.
 const CONFIG = {
-  APPS_SCRIPT_URL: "", // ← paste the APAC /exec URL from SETUP.md block B
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwyYg07IqCB4kvktE95-BnflheiHTRa7kF3xv6Fj4P_ZY0SPxxtPY7_03oYpBePKWqd/exec",
   SHARED_SECRET: "46f0a726c0a6c54ed9f5869675a198aa",
   // Same GitHub Pages origin as the other scanner, so the existing OAuth client works.
   GOOGLE_CLIENT_ID: "390796699464-c09vqjstirfb6mjqtrr1h17bfb5nb1eg.apps.googleusercontent.com",
   ALLOWED_DOMAIN: "classiq.io",
-  APP_VERSION: "v1", // keep in sync with CACHE_VERSION in sw.js
+  APP_VERSION: "v2", // keep in sync with CACHE_VERSION in sw.js
 };
 // ======================================================
 
