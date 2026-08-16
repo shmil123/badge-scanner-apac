@@ -150,8 +150,10 @@ def main():
     n = ver["versionNumber"]
     print(f"Created version {n}")
 
+    # Update the existing deployment in place when we have one — that keeps the /exec
+    # URL stable, which matters because it's baked into the published PWA.
     dep_id = state.get("deploymentId")
-    if dep_id and args.redeploy or dep_id:
+    if dep_id:
         call(c, "PUT", f"/projects/{script_id}/deployments/{dep_id}",
              {"deploymentConfig": {"scriptId": script_id, "versionNumber": n,
                                    "manifestFileName": "appsscript",

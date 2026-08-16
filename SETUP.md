@@ -12,6 +12,9 @@ Two ways to get it. **Path 1 is automated** — prefer it.
 > Do **not** run these steps on the *Event Leads* sheet — that one belongs to the other scanner.
 
 App URL: **https://shmil123.github.io/badge-scanner-apac/**
+Backend: deployed and verified end-to-end on 2026-08-16 — **nothing below is outstanding.**
+Re-run `python deploy_apps_script.py --redeploy` after any `Code.gs` edit; it reuses the same
+deployment, so the `/exec` URL baked into the PWA never changes.
 
 Already done (no action needed):
 - The APAC sheet has its `TEMPLATE` (26 columns, Push? checkboxes in column V) and `Config` tabs.
@@ -30,13 +33,17 @@ Already done (no action needed):
 `deploy_apps_script.py` creates the bound script project, pushes `Code.gs`, versions it and
 deploys the web app over the Apps Script API.
 
-**One-time prerequisite**, both in a browser as matanw@classiq.io:
+**One-time prerequisites — all three are already done**, kept here for the next time you
+stand one of these up. Google gates this in three separate places:
 
-1. Enable the Apps Script API for the Cloud project behind our OAuth client:
+1. Enable the Apps Script API on the OAuth client's Cloud project:
    https://console.developers.google.com/apis/api/script.googleapis.com/overview?project=1000783419896
-   → **Enable**. (Wait a minute for it to propagate.)
-2. If the deploy still errors, flip the account-level switch at
-   https://script.google.com/home/usersettings → **Google Apps Script API: On**.
+2. Flip the *account-level* switch (a different gate from #1):
+   https://script.google.com/home/usersettings → **Google Apps Script API: On**
+3. Authorize the created script once, in a browser — the API can create and deploy a project but
+   cannot grant it Sheets/Drive/UrlFetch access, so the web app returns 403 until you do. Open
+   https://script.google.com/d/1TA3gIuW5qpLqtGFtFVmnwX_8GX0u9iaLPGlhTY3ncZk0Fosbf1Yu_vgt/edit
+   → run **`authorizeDrive`** → Allow.
 
 Then:
 

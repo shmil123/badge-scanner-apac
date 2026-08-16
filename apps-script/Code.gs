@@ -59,7 +59,11 @@ function handleConfig_(req) {
   var events = ss.getSheets()
     .map(function (s) { return s.getName(); })
     .filter(function (n) { return RESERVED_TABS.indexOf(n) === -1; });
-  var reps = ss.getSheetByName("Config").getRange("A2:A50").getValues()
+  // Read to the last populated row, never a fixed range — a hardcoded A2:A50 silently
+  // truncated the rep list the moment the roster passed 49 names.
+  var cfg = ss.getSheetByName("Config");
+  var lastRep = cfg.getLastRow();
+  var reps = lastRep < 2 ? [] : cfg.getRange(2, 1, lastRep - 1, 1).getValues()
     .map(function (r) { return String(r[0]).trim(); })
     .filter(function (v) { return v; });
   return json_({ ok: true, events: events, reps: reps });
@@ -226,16 +230,25 @@ function handleRomanize_(req) {
       role: "user",
       content: [{
         type: "text",
-        text: "Transliterate these Asian-language contact details into the Latin alphabet for a " +
-          "CRM. Use Hepburn for Japanese, Revised Romanization for Korean, Hanyu Pinyin without " +
+        // The caller already knows which field is the given name and which is the family
+        // name, so this step must NOT re-order them: name order is language-specific
+        // (Thai prints given name first, CJK/Vietnamese family name first) and guessing
+        // it here swapped Thai names. Ordering is decided in EXTRACT_PROMPT, where the
+        // model can actually see the badge.
+        text: "Transliterate these contact details into the Latin alphabet for a CRM. " +
+          "Use Hepburn for Japanese, Revised Romanization for Korean, Hanyu Pinyin without " +
           "tone marks for Chinese, RTGS for Thai, and Vietnamese with diacritics removed. " +
           "Translate the company name to its common English form if it has one, otherwise " +
-          "transliterate it. Split the person's name into given name and family name correctly " +
-          "for that language (CJK and Vietnamese print family name first).\n\n" +
-          "Name part 1 (as printed first): " + (first || "(none)") + "\n" +
-          "Name part 2 (as printed second): " + (last || "(none)") + "\n" +
+          "transliterate it.\n\n" +
+          "Transliterate each field IN PLACE. The given name stays the given name and the " +
+          "family name stays the family name — do NOT swap, reorder, merge or split them. " +
+          "Romanize the whole of each name: every syllable, nothing dropped " +
+          "(e.g. 민준 → Minjun, not Jun).\n\n" +
+          "Given name: " + (first || "(none)") + "\n" +
+          "Family name: " + (last || "(none)") + "\n" +
           "Company: " + (company || "(none)") + "\n\n" +
-          'Respond with ONLY JSON: {"first_name":"","last_name":"","company":""}'
+          'Respond with ONLY JSON: {"first_name":"","last_name":"","company":""} — ' +
+          "first_name is the transliterated given name, last_name the transliterated family name."
       }]
     }]
   });
