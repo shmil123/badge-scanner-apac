@@ -133,11 +133,16 @@ Identical to `badge-scanner/`, with its own secret and its own sheet:
   account; access = sheet sharing.
 - Anthropic API: badge photos and native-name strings are processed transiently for extraction
   and transliteration; API data is not used for model training by default.
-- The shared secret + Apps Script URL are visible in this public repo. That's friction against
-  bots, not real secrecy; blast radius is bounded by per-minute rate limits on every action, a
-  payload size cap, human review before anything reaches the CRM, and the API key living only
-  in Script Properties. Rotating: change `SHARED_SECRET` in Script Properties + CONFIG in
-  index.html.
+- **Server-side identity (when `SESSION_SECRET` is set):** the backend verifies the rep's Google
+  sign-in itself and mints an HMAC-signed session token that every `submit`/`extract`/`romanize`
+  must carry. The signing key lives only in Script Properties, never in this public repo — so the
+  public `SHARED_SECRET` alone can no longer inject leads or spend Anthropic credits. Sessions last
+  14 days (sign in once, scan all week). Unset → legacy secret-only mode. See SETUP.md.
+- The shared secret + Apps Script URL are still visible in this public repo (they ship in the PWA);
+  they now act as a first cheap gate in front of the rate limits, not the real authorization. Also
+  bounded by per-minute rate limits on every action, a payload size cap, human review before the
+  CRM, and the API key living only in Script Properties. Rotating the shared secret: change
+  `SHARED_SECRET` in Script Properties + CONFIG in index.html.
 
 **Rep etiquette:** ask the attendee before photographing their badge — same consent norm as the
 official event scanners.

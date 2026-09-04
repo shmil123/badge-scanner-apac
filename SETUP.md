@@ -63,6 +63,15 @@ Two design notes that let this work without Script Properties (which have no API
   project, never into git. It sits behind sheet edit-access, the same boundary as a Script
   Property. `Code.gs` still prefers the Script Property if one is set.
 
+**Turn identity enforcement on (do this once, whichever path you used):** open the script project
+→ **Project Settings → Script Properties** and add `SESSION_SECRET` = a long random string
+(`python3 -c "import secrets; print(secrets.token_hex(32))"`). Once set, the backend only accepts
+`submit`/`extract`/`romanize` calls that carry a session token it minted after verifying a real
+@classiq.io Google sign-in — so the shared secret in this public repo can no longer inject leads
+or spend Anthropic credits. The key stays server-only (not in the repo, not in the PWA). Leave it
+unset for legacy (secret-only) behaviour. It's a manual Script Property because the deploy script's
+API can't write Script Properties.
+
 ---
 
 ## Path 2 — manual, if the API route is blocked (5 min)
@@ -72,10 +81,11 @@ Two design notes that let this work without Script Properties (which have no API
 3. **Delete everything** in that editor, then paste the full contents of
    [`apps-script/Code.gs`](apps-script/Code.gs) from this folder. Press **⌘S** to save.
 4. Left sidebar → **gear icon (Project Settings)**.
-5. Scroll to **Script Properties** → **Add script property** → add one row:
+5. Scroll to **Script Properties** → **Add script property** → add these rows:
    | Property | Value |
    |---|---|
    | `ANTHROPIC_API_KEY` | the `ANTHROPIC_API_KEY=` value from `quantum-intel/.env` |
+   | `SESSION_SECRET` | any long random string you generate — see below |
    Click **Save script properties**.
    (`SHARED_SECRET` needs no row — it's a constant in `Code.gs`, APAC-only and deliberately
    different from the other scanner's. Add a `SHARED_SECRET` property only to rotate it.)
