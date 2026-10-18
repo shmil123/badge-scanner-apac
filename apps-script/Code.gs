@@ -60,6 +60,11 @@ var PHOTO_FOLDER = "Badge Scanner APAC Photos";
 // client); a SHARED_SECRET Script Property overrides it if you ever rotate.
 var SHARED_SECRET = "46f0a726c0a6c54ed9f5869675a198aa";
 
+// Kill switch (Oct 18 2026): app paused pending a compliance review. While true, every
+// request is refused before it touches the sheet, Drive or the Anthropic API.
+// To restore: set to false and redeploy.
+var PAUSED = true;
+
 // Config moved behind the shared secret (POST action=config) — a bare GET must
 // not enumerate event names or rep names.
 function doGet(e) {
@@ -83,6 +88,7 @@ function handleConfig_(req) {
 }
 
 function doPost(e) {
+  if (PAUSED) return json_({ ok: false, error: "Badge scanner is paused" });
   var req;
   try {
     req = JSON.parse(e.postData.contents);
